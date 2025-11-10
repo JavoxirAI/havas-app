@@ -7,13 +7,18 @@ class Contact(models.Model):
         ('telegram', 'Telegram'),
         ('instagram', 'Instagram'),
         ('facebook', 'Facebook'),
-        ('gmail', 'Gmail'),
+        ('email', 'Email'),
     ]
 
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    title = models.CharField(max_length=50)  # Masalan: Телефон
-    value = models.CharField(max_length=255)  # Phone number yoki URL
-    icon = models.ImageField(upload_to='contact_icons/', blank=True, null=True)
+    title = models.CharField(max_length=100)
+    value = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']  # ✅ Pagination warning ni hal qilish
+        verbose_name = 'Contact'
+        verbose_name_plural = 'Contacts'
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.type})"

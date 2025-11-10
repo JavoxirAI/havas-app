@@ -2,13 +2,13 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from apps.story.models import Story, StoryStatus
+from apps.stories.models import Story, StoryStatus
 
 
 @receiver(pre_save, sender=Story)
 def auto_set_published_at(sender, instance, **kwargs):
     """
-    Automatically set published_at when story status changes to PUBLISHED
+    Automatically set published_at when stories status changes to PUBLISHED
     """
     if instance.status == StoryStatus.PUBLISHED and not instance.published_at:
         instance.published_at = timezone.now()

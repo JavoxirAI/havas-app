@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response  # ✅ Import qo'shing
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -30,8 +31,9 @@ class CustomPageNumberPagination(PageNumberPagination):
         return list(self.page)
 
     def get_paginated_response(self, data):
+        """Response obyekti qaytarish kerak, dict emas!"""
         if self.page is None:
-            return {
+            return Response({  # ✅ Response() ichiga o'rang
                 'pagination': {
                     'total_items': 0,
                     'total_pages': 0,
@@ -40,10 +42,10 @@ class CustomPageNumberPagination(PageNumberPagination):
                     'next_page': None,
                     'prev_page': None,
                 },
-                'results': None
-            }
+                'results': []  # ✅ None o'rniga [] qaytaring
+            })
 
-        return {
+        return Response({  # ✅ Response() ichiga o'rang
             'pagination': {
                 'total_items': self.page.paginator.count,
                 'total_pages': self.page.paginator.num_pages,
@@ -53,4 +55,4 @@ class CustomPageNumberPagination(PageNumberPagination):
                 'prev_page': self.page.previous_page_number() if self.page.has_previous() else None,
             },
             'results': data
-        }
+        })

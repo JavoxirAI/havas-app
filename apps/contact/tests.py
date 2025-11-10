@@ -22,14 +22,20 @@ class ContactAPITestCase(APITestCase):
         """
         GET /api/contacts/ -> barcha kontaktlar qaytishi
         """
-        url = reverse('contacts:contact-list-create')
+        url = reverse('contact:contact-list-create')
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Pagination formatini tekshirish
+        self.assertIn('pagination', response.data)
+        self.assertIn('results', response.data)
+
         # Ro'yxat uzunligi 2 bo'lishi kerak
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
 
         # Birinchi obyektda kerakli maydonlar borligini tekshirish
-        first = response.data[0]
+        first = response.data['results'][0]
         self.assertIn('id', first)
         self.assertIn('type', first)
         self.assertIn('title', first)
@@ -39,7 +45,7 @@ class ContactAPITestCase(APITestCase):
         """
         GET /api/contacts/<id>/ -> bitta kontakt ma'lumotini olamiz
         """
-        url = reverse('contacts:contact-detail', args=[self.contact1.id])
+        url = reverse('contact:contact-detail', args=[self.contact1.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'], self.contact1.id)
@@ -51,7 +57,7 @@ class ContactAPITestCase(APITestCase):
         """
         POST /api/contacts/ -> yangi kontakt yaratish
         """
-        url = reverse('contacts:contact-list-create')
+        url = reverse('contact:contact-list-create')
         payload = {
             'type': 'instagram',
             'title': 'Instagram',
@@ -69,7 +75,7 @@ class ContactAPITestCase(APITestCase):
         """
         PUT /api/contacts/<id>/ -> to'liq yangilash (barcha maydonlar)
         """
-        url = reverse('contacts:contact-detail', args=[self.contact2.id])
+        url = reverse('contact:contact-detail', args=[self.contact2.id])
         payload = {
             'type': 'telegram',
             'title': 'Telegram (yangilandi)',
@@ -86,7 +92,7 @@ class ContactAPITestCase(APITestCase):
         """
         PATCH /api/contacts/<id>/ -> qisman yangilash (masalan faqat value)
         """
-        url = reverse('contacts:contact-detail', args=[self.contact1.id])
+        url = reverse('contact:contact-detail', args=[self.contact1.id])
         payload = {'value': '+998991112233'}
         response = self.client.patch(url, payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -101,7 +107,7 @@ class ContactAPITestCase(APITestCase):
         """
         DELETE /api/contacts/<id>/ -> kontaktni o'chirish
         """
-        url = reverse('contacts:contact-detail', args=[self.contact1.id])
+        url = reverse('contact:contact-detail', args=[self.contact1.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Contact.objects.filter(id=self.contact1.id).exists())
@@ -111,7 +117,7 @@ class ContactAPITestCase(APITestCase):
         Yaroqsiz type bilan contact yaratishga urinish -> 400
         (agar serializer type chekloviga ega bo'lsa)
         """
-        url = reverse('contacts:contact-list-create')
+        url = reverse('contact:contact-list-create')
         payload = {
             'type': 'invalid_type',
             'title': 'Xato type',
@@ -120,4 +126,3 @@ class ContactAPITestCase(APITestCase):
         response = self.client.post(url, payload, format='json')
         # Agar serializer TYPE_CHOICES bilan ishlasa, 400 qaytishi kerak
         self.assertIn(response.status_code, (status.HTTP_400_BAD_REQUEST, status.HTTP_201_CREATED))
-

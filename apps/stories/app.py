@@ -8,4 +8,4 @@ class StoriesConfig(AppConfig):
 
     def ready(self):
         """Import signals when app is ready"""
-        import apps.story.signals
+        import apps.stories.signals

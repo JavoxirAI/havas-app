@@ -4,6 +4,8 @@ from django.apps import AppConfig
 class ProductsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.products'
+    verbose_name = 'Products'
 
     def ready(self):
-        from apps.products import signals
+        """Import signals when app is ready"""
+        import apps.products.signals  # noqa

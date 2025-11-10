@@ -16,3 +16,5 @@ class IsMobileOrWebUser(BasePermission):
         request.device = device
 
         return device
+
+
